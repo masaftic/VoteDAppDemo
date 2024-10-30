@@ -1,77 +1,43 @@
-// import { ethers } from 'ethers';
-// import votingArtifact from '../artifacts/contracts/Voting.sol/Voting.json';
-
-// const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // Your deployed contract address
-// const votingAbi = votingArtifact.abi;
-
-// const provider = new ethers.providers.Web3Provider(window.ethereum);
-// const signer = provider.getSigner();
-
-// const votingContract = new ethers.Contract(contractAddress, votingAbi, signer);
-
-
-// // app.js
-// async function connectWallet() {
-//     // Check if MetaMask is installed
-//     if (window.ethereum) {
-//         getAccount()
-//     } else {
-//         alert('Please install MetaMask!');
-//     }
-// }
-
-// // Attach the click event to the button
-// document.getElementById('connectWallet').addEventListener('click', connectWallet);
-
-
-// async function getAccount() {
-//     const accounts = await window.ethereum
-//         .request({ method: "eth_requestAccounts" })
-//         .catch((err) => {
-//             if (err.code === 4001) {
-//                 // EIP-1193 userRejectedRequest error.
-//                 // If this happens, the user rejected the connection request.
-//                 console.log("Please connect to MetaMask.")
-//             } else {
-//                 console.error(err)
-//             }
-//         })
-//     const account = accounts[0]
-//     document.getElementById('account').innerHTML = account
-// }
-
-
-// async function vote(candidateId) {
-//     if (typeof window.ethereum === 'undefined') {
-//         alert('MetaMask is not installed!');
-//         return;
-//     }
-
-//     const account = (await window.ethereum.request({ method: "eth_requestAccounts" }))[0];
-
-//     // Define the transaction
-//     const transactionParameters = {
-//         to: contractAddress, // Replace with your contract address
-//         from: account,
-//         data: new ethers.utils.Interface(votingAbi).encodeFunctionData("vote", [candidateId]), // Encodes the call to the contract's vote function
-//     };
-
-//     try {
-//         // Send the transaction
-//         const txHash = await window.ethereum.request({
-//             method: 'eth_sendTransaction',
-//             params: [transactionParameters],
-//         });
-//         console.log('Transaction sent! Hash:', txHash);
-//     } catch (error) {
-//         console.error('Transaction failed:', error);
-//     }
-// }
-
-// document.getElementById('vote').addEventListener('click', () => vote(1)); // Voting for candidate 1
-
 import { ethers } from "./ethMin.js";
 
+/**
+ * Main function to initialize the voting DApp.
+ * 
+ * This function sets up event listeners for various buttons, initializes the voting contract,
+ * and updates the voting status periodically.
+ * 
+ * @async
+ * @function main
+ * 
+ * @description
+ * - Connects to MetaMask and initializes the voting contract.
+ * - Sets up event listeners for the "Connect Wallet", "Show Winner", and vote buttons.
+ * - Fetches and displays the voting start and end times.
+ * - Updates the voting status every second.
+ * 
+ * @requires ethers
+ * @requires window.ethereum
+ * 
+ * @constant {string} LOCAL_NETWORK_URL - The URL of the local Ethereum network.
+ * @constant {string} CONTRACT_ADDRESS_PATH - The path to the JSON file containing the contract address.
+ * @constant {string} CONTRACT_ABI_PATH - The path to the JSON file containing the contract ABI.
+ * 
+ * @property {Object} votingContract - The initialized voting contract.
+ * @property {number} startTime - The start time of the voting period.
+ * @property {number} endTime - The end time of the voting period.
+ * @property {boolean} connected - Indicates whether the wallet is connected.
+ * 
+ * @function connect - Connects to MetaMask and initializes the voting contract.
+ * @function requestAccounts - Requests the user's Ethereum accounts.
+ * @function fetchContractAddress - Fetches the contract address from a JSON file.
+ * @function fetchContractABI - Fetches the contract ABI from a JSON file.
+ * @function initializeContract - Initializes the voting contract.
+ * @function updateVotingStatus - Updates the voting status based on the current time.
+ * @function convertToDate - Converts a timestamp in seconds to a Date object.
+ * @function vote - Casts a vote for a candidate.
+ * @function showWinner - Displays the winner of the voting.
+ * @function mustHaveMetaMask - Checks if MetaMask is installed.
+ */
 async function main() {
 
 
@@ -132,13 +98,13 @@ async function main() {
     }
 
     async function fetchContractAddress() {
-        const response = await fetch(CONTRACT_ADDRESS_PATH); // Adjust the path as needed
+        const response = await fetch(CONTRACT_ADDRESS_PATH);
         const data = await response.json();
         return data["Egypt#Voting"];
     }
 
     async function fetchContractABI() {
-        const response = await fetch(CONTRACT_ABI_PATH); // Adjust the path as needed
+        const response = await fetch(CONTRACT_ABI_PATH);
         const data = await response.json();
         return data.abi;
     }
@@ -180,10 +146,8 @@ async function main() {
         document.getElementById("votingStatus").innerHTML = status;
     }
 
-    // Initial call to set the status
     updateVotingStatus();
 
-    // Update the status every minute
     setInterval(updateVotingStatus, 1000);
 
 
