@@ -1,13 +1,35 @@
 # Sample Hardhat Project
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
+Very basic Voting DApp
 
-Try running some of the following tasks:
+## to run the demo
+
+1. install all dependencies with:
 
 ```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.ts
+yarn
 ```
+
+2. compile the contract:
+
+```shell
+yarn hardhat compile
+```
+
+3. Run hardhat node:
+
+```shell
+yarn hardhat node
+```
+
+4. Deploy the contract:
+
+```shell
+yarn hardhat ignition deploy ./ignition/modules/Voting.ts
+```
+
+5. Add hardhat local network to MetaMask
+
+6. Import account into MetaMask from hardhat node
+
+7. Run live server on client/index.html
