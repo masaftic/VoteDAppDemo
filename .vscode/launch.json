@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug Hardhat Test with Yarn",
+        "runtimeExecutable": "yarn",
+        "args": ["hardhat", "test"],
+        "skipFiles": ["<node_internals>/**"],
+        "outFiles": ["${workspaceFolder}/**/*.js"],
+        "cwd": "${workspaceFolder}",
+        "autoAttachChildProcesses": true
+      }
+    ]
+  }
+  
