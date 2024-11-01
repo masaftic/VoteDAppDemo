@@ -1,6 +1,5 @@
-# Sample Hardhat Project
 
-Very basic Voting DApp
+# Very basic Voting DApp
 
 ## to run the demo
 
