@@ -55,8 +55,7 @@ async function main() {
 
 
     const LOCAL_NETWORK_URL = "http://127.0.0.1:8545";
-    const CONTRACT_ADDRESS_PATH = "../ignition/deployments/chain-31337/deployed_addresses.json";
-    const CONTRACT_ABI_PATH = `../artifacts/contracts/Voting.sol/Voting.json`;
+    const CONTRACT_INFO_PATH = "../deployments-info/voting_contract_info.json";
 
     let votingContract;
     let startTime;
@@ -97,17 +96,12 @@ async function main() {
         return await window.ethereum.request({ method: 'eth_requestAccounts' });
     }
 
-    async function fetchContractAddress() {
-        const response = await fetch(CONTRACT_ADDRESS_PATH);
+    async function fetchContractInfo() {
+        const response = await fetch(CONTRACT_INFO_PATH);
         const data = await response.json();
-        return data["Egypt#Voting"];
+        return data;
     }
 
-    async function fetchContractABI() {
-        const response = await fetch(CONTRACT_ABI_PATH);
-        const data = await response.json();
-        return data.abi;
-    }
 
     async function initializeContract() {
         const provider = new ethers.BrowserProvider(window.ethereum);
@@ -116,10 +110,12 @@ async function main() {
         const signer = await provider.getSigner();
         console.log('Signer:', signer);
 
-        const contractAbi = await fetchContractABI();
+        const contractInfo = await fetchContractInfo();
+
+        const contractAbi = contractInfo.abi;
         console.log('contract abi:', contractAbi);
 
-        const contractAddress = await fetchContractAddress();
+        const contractAddress = contractInfo.address;
         console.log('contract address:', contractAddress);
 
         const votingContract = new ethers.Contract(contractAddress, contractAbi, signer);
@@ -177,7 +173,7 @@ async function main() {
         mustHaveMetaMask();
 
         try {
-            const votingContract = await initializeContract(); // Assume you have this from your previous setup
+            document.getElementById("winner").innerHTML = "Fetching winner...";
 
             votingContract.on(votingContract.filters.WinnerDeclared(), (winner) => {
                 const name = winner.args[0];
@@ -188,16 +184,12 @@ async function main() {
                 console.log(winner);
             });
 
-
             // Call the getWinnerWithTransaction function
-            await votingContract.getWinnerWithTransaction();
-           
-            
+            await votingContract.getWinnerWithTransaction();      
 
         } catch (e) {
             console.error(e);
         }
-
     }
 
 
@@ -209,7 +201,5 @@ async function main() {
     }
 
 }
-
-
 
 main().catch(console.error);
