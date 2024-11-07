@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-
 import "hardhat/console.sol";
-
 
 contract Voting {
     struct Candidate {
@@ -31,10 +29,7 @@ contract Voting {
         endTime = _endTime;
 
         for (uint i = 0; i < _names.length; i++) {
-            candidates.push(Candidate({
-                name: _names[i],
-                voteCount: 0
-            }));
+            candidates.push(Candidate({name: _names[i], voteCount: 0}));
         }
 
         console.log("Constructor:: start time:   %d", startTime);
@@ -42,8 +37,15 @@ contract Voting {
         console.log("Constructor:: End time:     %d", endTime);
     }
 
+
+    // DON'T PUT A FALL BACK FUNCTION FOR SOME REASON IT MAKES SYNC ERRORS
+    fallback() external {}
+
     modifier onlyDuringVotingPeriod() {
-        require(block.timestamp >= startTime, "Voting period has not started yet");
+        require(
+            block.timestamp >= startTime,
+            "Voting period has not started yet"
+        );
         require(block.timestamp <= endTime, "Voting period has ended");
         _;
     }
@@ -53,7 +55,10 @@ contract Voting {
         console.log("Vote:: Current time: %d", block.timestamp);
         console.log("Vote:: End time:     %d", endTime);
 
-        require(block.timestamp >= startTime, "Voting period has not started yet");
+        require(
+            block.timestamp >= startTime,
+            "Voting period has not started yet"
+        );
         require(block.timestamp <= endTime, "Voting period has ended");
 
         require(candidateId < candidates.length, "Invalid candidate ID");
@@ -65,28 +70,38 @@ contract Voting {
         emit Voted(msg.sender, candidateId);
     }
 
-    function getCandidate(uint candidateId) public view returns (string memory name, uint voteCount) {
+    function getCandidate(
+        uint candidateId
+    ) public view returns (string memory name, uint voteCount) {
         require(candidateId < candidates.length, "Invalid candidate ID");
 
         Candidate memory candidate = candidates[candidateId];
         return (candidate.name, candidate.voteCount);
     }
 
-    function getVoteCount(uint candidateId) public view returns (uint voteCount) {
+    function getVoteCount(
+        uint candidateId
+    ) public view returns (uint voteCount) {
         require(candidateId < candidates.length, "Invalid candidate ID");
 
         Candidate memory candidate = candidates[candidateId];
         return candidate.voteCount;
     }
 
-
     // should be a state-changing function to be able to calculate time properly
-    function getWinnerWithTransaction() public returns (string memory name, uint voteCount) {
+    function getWinnerWithTransaction()
+        public
+        returns (string memory name, uint voteCount)
+    {
         (name, voteCount) = getWinner();
         emit WinnerDeclared(name, voteCount); // Emit winner details
     }
 
-    function getWinner() public view returns (string memory name, uint voteCount) {
+    function getWinner()
+        public
+        view
+        returns (string memory name, uint voteCount)
+    {
         require(block.timestamp > endTime, "Voting period has not ended yet");
 
         uint maxVotes = 0;
@@ -101,5 +116,13 @@ contract Voting {
 
         Candidate memory winner = candidates[winnerId];
         return (winner.name, winner.voteCount);
+    }
+
+    function getStartTime() public view returns (uint256) {
+        return startTime;
+    }
+
+    function getEndTime() public view returns (uint256) {
+        return endTime;
     }
 }

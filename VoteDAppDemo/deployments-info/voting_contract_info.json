@@ -1,12 +1,15 @@
 {
-  "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
   "abi": [
     "constructor(string[] _names, uint256 _startTime, uint256 _endTime)",
     "event Voted(address indexed voter, uint256 indexed candidateId)",
     "event WinnerDeclared(string name, uint256 voteCount)",
+    "fallback()",
     "function candidates(uint256) view returns (string name, uint256 voteCount)",
     "function endTime() view returns (uint256)",
     "function getCandidate(uint256 candidateId) view returns (string name, uint256 voteCount)",
+    "function getEndTime() view returns (uint256)",
+    "function getStartTime() view returns (uint256)",
     "function getVoteCount(uint256 candidateId) view returns (uint256 voteCount)",
     "function getWinner() view returns (string name, uint256 voteCount)",
     "function getWinnerWithTransaction() returns (string name, uint256 voteCount)",
@@ -20,6 +23,6 @@
     "Ahmed Tantawy",
     "Hosni Mubarak"
   ],
-  "startTime": 1730921307,
-  "endTime": 1730921337
+  "startTime": 1730986177,
+  "endTime": 1730986207
 }

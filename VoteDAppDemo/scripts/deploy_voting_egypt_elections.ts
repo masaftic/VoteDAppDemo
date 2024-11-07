@@ -28,6 +28,10 @@ async function main() {
 
     await fs.writeFile('deployments-info/voting_contract_info.json', JSON.stringify(contractInfo, null, 2));
     console.log("Saved deployments info to deployments-info/voting_contract_info.json");
+
+
+    const test = await voting.getStartTime();
+    console.log('test:', test.toString());
 }
 
 main().catch((error) => {

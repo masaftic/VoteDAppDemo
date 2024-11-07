@@ -66,29 +66,32 @@ async function main() {
     async function connect() {
         mustHaveMetaMask();
 
+        let accounts;
+
         try {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-        } catch (error) {
+            console.log('Requesting accounts...');
+            accounts = await requestAccounts();
+            console.log('Accounts:', accounts);
+
+            connectButton.innerHTML = 'Connected';
+            connected = true;
+            console.log(ethers);
+
+            document.getElementById('account').innerHTML = `account address: ${accounts[0]}`;
+        }
+        catch (error) {
             alert('Error connecting with MetaMask');
             console.error(error);
+            return;
         }
 
         votingContract = await initializeContract();
 
-        startTime = await votingContract.startTime();
-        endTime = await votingContract.endTime();
-    
+        startTime = await votingContract.getStartTime();
+        endTime = await votingContract.getEndTime();
+
         document.getElementById("startTime").innerHTML = convertToDate(startTime);
         document.getElementById("endTime").innerHTML = convertToDate(endTime);
-
-        connectButton.innerHTML = 'Connected';
-        connected = true;
-        console.log(ethers);
-
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
-
-        document.getElementById('account').innerHTML = `account address: ${accounts[0]}`;
-        console.log(accounts);
     }
 
 
@@ -117,7 +120,7 @@ async function main() {
 
         const contractAddress = contractInfo.address;
         console.log('contract address:', contractAddress);
-
+        
         const votingContract = new ethers.Contract(contractAddress, contractAbi, signer);
         console.log('Contract initialized:', votingContract);
 
@@ -180,12 +183,12 @@ async function main() {
                 const votes = winner.args[1];
 
                 document.getElementById("winner").innerHTML = `winner: ${name}, with ${votes} votes`;
-                
+
                 console.log(winner);
             });
 
             // Call the getWinnerWithTransaction function
-            await votingContract.getWinnerWithTransaction();      
+            await votingContract.getWinnerWithTransaction();
 
         } catch (e) {
             console.error(e);
