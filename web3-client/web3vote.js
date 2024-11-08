@@ -1,45 +1,7 @@
-import { ethers } from "./ethMin.js";
+import { ethers } from "ethers";
 
-/**
- * Main function to initialize the voting DApp.
- * 
- * This function sets up event listeners for various buttons, initializes the voting contract,
- * and updates the voting status periodically.
- * 
- * @async
- * @function main
- * 
- * @description
- * - Connects to MetaMask and initializes the voting contract.
- * - Sets up event listeners for the "Connect Wallet", "Show Winner", and vote buttons.
- * - Fetches and displays the voting start and end times.
- * - Updates the voting status every second.
- * 
- * @requires ethers
- * @requires window.ethereum
- * 
- * @constant {string} LOCAL_NETWORK_URL - The URL of the local Ethereum network.
- * @constant {string} CONTRACT_ADDRESS_PATH - The path to the JSON file containing the contract address.
- * @constant {string} CONTRACT_ABI_PATH - The path to the JSON file containing the contract ABI.
- * 
- * @property {Object} votingContract - The initialized voting contract.
- * @property {number} startTime - The start time of the voting period.
- * @property {number} endTime - The end time of the voting period.
- * @property {boolean} connected - Indicates whether the wallet is connected.
- * 
- * @function connect - Connects to MetaMask and initializes the voting contract.
- * @function requestAccounts - Requests the user's Ethereum accounts.
- * @function fetchContractAddress - Fetches the contract address from a JSON file.
- * @function fetchContractABI - Fetches the contract ABI from a JSON file.
- * @function initializeContract - Initializes the voting contract.
- * @function updateVotingStatus - Updates the voting status based on the current time.
- * @function convertToDate - Converts a timestamp in seconds to a Date object.
- * @function vote - Casts a vote for a candidate.
- * @function showWinner - Displays the winner of the voting.
- * @function mustHaveMetaMask - Checks if MetaMask is installed.
- */
+
 async function main() {
-
 
     const connectButton = document.getElementById("connectWallet");
     connectButton.onclick = connect;
@@ -55,7 +17,7 @@ async function main() {
 
 
     const LOCAL_NETWORK_URL = "http://127.0.0.1:8545";
-    const CONTRACT_INFO_PATH = "../deployments-info/voting_contract_info.json";
+    const CONTRACT_INFO_PATH = "./deployments-info/voting_contract_info.json";
 
     let votingContract;
     let startTime;
@@ -75,7 +37,6 @@ async function main() {
 
             connectButton.innerHTML = 'Connected';
             connected = true;
-            console.log(ethers);
 
             document.getElementById('account').innerHTML = `account address: ${accounts[0]}`;
         }
@@ -85,7 +46,12 @@ async function main() {
             return;
         }
 
-        votingContract = await initializeContract();
+        try {
+            votingContract = await initializeContract();
+        } catch (e) {
+            console.error(e);
+            return;
+        }
 
         startTime = await votingContract.getStartTime();
         endTime = await votingContract.getEndTime();
@@ -108,27 +74,29 @@ async function main() {
 
     async function initializeContract() {
         const provider = new ethers.BrowserProvider(window.ethereum);
-        console.log('provider:', provider);
+        console.log('provider: ', provider);
 
         const signer = await provider.getSigner();
-        console.log('Signer:', signer);
+        console.log('Signer: ', signer);
 
         const contractInfo = await fetchContractInfo();
 
         const contractAbi = contractInfo.abi;
-        console.log('contract abi:', contractAbi);
+        console.log('contract abi: ', contractAbi);
 
         const contractAddress = contractInfo.address;
-        console.log('contract address:', contractAddress);
+        console.log('contract address: ', contractAddress);
         
-        const votingContract = new ethers.Contract(contractAddress, contractAbi, signer);
-        console.log('Contract initialized:', votingContract);
+        votingContract = new ethers.Contract(contractAddress, contractAbi, signer);
+        console.log('Contract initialized: ', votingContract);
 
         return votingContract;
     }
 
+    let currentTime;
+
     function updateVotingStatus() {
-        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+        currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
 
         let status = '';
         if (currentTime < startTime) {
@@ -152,9 +120,18 @@ async function main() {
 
     function convertToDate(timestampInSeconds) {
         const timestampInMillis = Number(timestampInSeconds) * 1000;
-
         const date = new Date(timestampInMillis);
-        return date;
+
+        // Format the date to a more readable format
+        const options = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+        };
+        return date.toLocaleString(undefined, options);
     }
 
 
@@ -176,6 +153,11 @@ async function main() {
         mustHaveMetaMask();
 
         try {
+            if (currentTime <= endTime) {
+                alert("Voting hasn't ended yet");
+                return;
+            }
+
             document.getElementById("winner").innerHTML = "Fetching winner...";
 
             votingContract.on(votingContract.filters.WinnerDeclared(), (winner) => {

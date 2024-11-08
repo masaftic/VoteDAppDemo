@@ -1,7 +1,7 @@
-import { buildModule } from "@nomicfoundation/ignition-core";
+import { buildModule, IgnitionModuleBuilder } from "@nomicfoundation/ignition-core";
 import hardhat from "hardhat";
 
-export default buildModule("Egypt", (m) => {
+export const deployModule = (m: IgnitionModuleBuilder) => {
     const candidates = ["Sisi", "Ahmed Tantawy", "Hosni Mubarak"];
     const startTime = Math.floor(new Date().getTime() / 1000);
     const endTime = startTime + 30;
@@ -21,5 +21,7 @@ export default buildModule("Egypt", (m) => {
     m.call(votingContract, "getCandidate", [1]);
 
 	// Return the result
-	return { votingContract };
-});
+    return { votingContract };
+};
+
+export default buildModule("Egyptww", deployModule);

@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "deploy": "yarn hardhat run scripts/deploy_voting_egypt_elections.ts",
+    "copy-info": "ts-node ./copy_deployment_info.ts",
+    "deploy-and-copy": "yarn deploy && yarn copy-info"
+  },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",

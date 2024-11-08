@@ -1,5 +1,5 @@
 {
-  "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+  "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
   "abi": [
     "constructor(string[] _names, uint256 _startTime, uint256 _endTime)",
     "event Voted(address indexed voter, uint256 indexed candidateId)",
